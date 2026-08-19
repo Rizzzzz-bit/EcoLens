@@ -1,7 +1,7 @@
 import client from './client'
 import type {
   Ticket, ClassifyResponse, LeaderboardUser, LeaderboardDepartment,
-  UserBadge, HeatmapPoint, AnalyticsSummary, RouterSnapshot,
+  UserBadge, HeatmapPoint, MapPoint, AnalyticsSummary, RouterSnapshot,
   SensorReading, AnomalyOut, Department
 } from '../types'
 
@@ -16,11 +16,16 @@ export const classifyImage = (file: File) => {
   return client.post<ClassifyResponse>('/ai/classify', form)
 }
 
-export const createTicket = (data: FormData) =>
-  client.post<Ticket>('/tickets', data)
+export const createTicket = (data: FormData, classificationToken: string) => {
+  data.append('classification_token', classificationToken)
+  return client.post<Ticket>('/tickets', data)
+}
 
 export const getTickets = (params?: Record<string, string | number>) =>
   client.get<Ticket[]>('/tickets', { params })
+
+export const getMyTicketCount = () =>
+  client.get<{ count: number }>('/tickets/my-count')
 
 export const getTicket = (id: number) =>
   client.get<Ticket>(`/tickets/${id}`)
@@ -30,6 +35,9 @@ export const updateTicketStatus = (id: number, status: string) =>
 
 export const getHeatmap = () =>
   client.get<HeatmapPoint[]>('/tickets/heatmap')
+
+export const getMapPoints = () =>
+  client.get<MapPoint[]>('/tickets/map-points')
 
 export const getLeaderboardUsers = (department_id?: number) =>
   client.get<LeaderboardUser[]>('/leaderboard/users', { params: { department_id } })

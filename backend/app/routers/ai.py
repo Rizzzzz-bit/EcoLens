@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 from app.db import get_db
 from app.dependencies import get_current_user
-from app.ai.classifier import classify_image
+from app.ai.classifier import classify_image, image_sha256, sign_result
 from app.ai.resource_anomaly import detect_resource_anomalies
 from typing import List
 
@@ -17,7 +17,9 @@ async def classify(
 ):
     image_bytes = await image.read()
     result = classify_image(image_bytes)
-    return result
+    img_hash = image_sha256(image_bytes)
+    token = sign_result(result, img_hash)
+    return {**result, "classification_token": token}
 
 
 @router.get("/resource-anomalies", response_model=List[schemas.AnomalyOut])

@@ -39,10 +39,12 @@ export interface Ticket {
 }
 
 export interface ClassifyResponse {
-  category: TicketCategory
-  confidence: number
+  relevant: boolean
+  category: TicketCategory | null
+  reason: string
   action_recommendation: string
   eco_tip: string
+  classification_token: string
 }
 
 export interface Badge {
@@ -76,10 +78,28 @@ export interface LeaderboardDepartment {
   member_count: number
 }
 
+export interface GpsLocation {
+  lat: number
+  lng: number
+  accuracy: number   // metres
+}
+
 export interface HeatmapPoint {
   lat: number
   lng: number
   weight: number
+}
+
+/** Minimal projection returned by GET /tickets/map-points.
+ *  Used exclusively by CampusMap for the coloured CircleMarker layer.
+ *  Contains no reporter PII or free-text fields.
+ */
+export interface MapPoint {
+  id: number
+  lat: number
+  lng: number
+  category: TicketCategory
+  status: TicketStatus
 }
 
 export interface AnalyticsSummary {

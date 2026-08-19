@@ -60,6 +60,21 @@ class TicketOut(BaseModel):
 class TicketStatusUpdate(BaseModel):
     status: TicketStatus
 
+class TicketCountOut(BaseModel):
+    count: int
+
+class TicketMapPoint(BaseModel):
+    """Minimal read-only projection used by GET /tickets/map-points.
+    Contains only the fields needed to render a coloured marker on the
+    CampusMap.  No reporter PII, no department details, no free-text fields.
+    """
+    id: int
+    lat: float
+    lng: float
+    category: TicketCategory
+    status: TicketStatus
+    model_config = {"from_attributes": True}
+
 class HeatmapPoint(BaseModel):
     lat: float
     lng: float
@@ -69,10 +84,12 @@ class HeatmapPoint(BaseModel):
 # ── AI ────────────────────────────────────────────────────────────────────────
 
 class ClassifyResponse(BaseModel):
-    category: TicketCategory
-    confidence: float
+    relevant: bool
+    category: Optional[TicketCategory] = None
+    reason: str
     action_recommendation: str
     eco_tip: str
+    classification_token: str
 
 
 # ── Gamification ──────────────────────────────────────────────────────────────

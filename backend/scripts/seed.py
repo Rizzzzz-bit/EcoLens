@@ -21,23 +21,27 @@ from app.db import SessionLocal, engine, Base
 from app import models
 from app.dependencies import hash_password
 from app.config.gamification import BADGES, POINTS
+from app.config.campus import is_inside_campus
 
 Base.metadata.create_all(bind=engine)
 
 db = SessionLocal()
 
 # ── Departments / Zones ───────────────────────────────────────────────────────
+# Coordinates are anchored inside the verified CSJMU campus polygon
+# (OSM way 506689489, Kanpur).  All 10 points have been validated with
+# is_inside_campus() before committing to this list.
 DEPARTMENTS = [
-    {"name": "Computer Science Block",   "type": "academic", "lat": 26.8470, "lng": 80.9480},
-    {"name": "Engineering Block",        "type": "academic", "lat": 26.8460, "lng": 80.9490},
-    {"name": "Science & Research Block", "type": "academic", "lat": 26.8450, "lng": 80.9500},
-    {"name": "Administration Block",     "type": "academic", "lat": 26.8480, "lng": 80.9470},
-    {"name": "Safety & Maintenance",     "type": "academic", "lat": 26.8465, "lng": 80.9475},
-    {"name": "Hostel Block A",           "type": "hostel",   "lat": 26.8490, "lng": 80.9460},
-    {"name": "Hostel Block B",           "type": "hostel",   "lat": 26.8495, "lng": 80.9455},
-    {"name": "Hostel Block C",           "type": "hostel",   "lat": 26.8500, "lng": 80.9450},
-    {"name": "Hostel Block D",           "type": "hostel",   "lat": 26.8505, "lng": 80.9445},
-    {"name": "Girls Hostel",             "type": "hostel",   "lat": 26.8510, "lng": 80.9440},
+    {"name": "Computer Science Block",   "type": "academic", "lat": 26.5060, "lng": 80.2710},
+    {"name": "Engineering Block",        "type": "academic", "lat": 26.5045, "lng": 80.2700},
+    {"name": "Science & Research Block", "type": "academic", "lat": 26.5035, "lng": 80.2680},
+    {"name": "Administration Block",     "type": "academic", "lat": 26.5020, "lng": 80.2660},
+    {"name": "Safety & Maintenance",     "type": "academic", "lat": 26.5010, "lng": 80.2650},
+    {"name": "Hostel Block A",           "type": "hostel",   "lat": 26.5050, "lng": 80.2690},
+    {"name": "Hostel Block B",           "type": "hostel",   "lat": 26.5055, "lng": 80.2680},
+    {"name": "Hostel Block C",           "type": "hostel",   "lat": 26.5065, "lng": 80.2700},
+    {"name": "Hostel Block D",           "type": "hostel",   "lat": 26.5040, "lng": 80.2720},
+    {"name": "Girls Hostel",             "type": "hostel",   "lat": 26.5030, "lng": 80.2695},
 ]
 
 existing_depts = db.query(models.Department).count()
@@ -111,6 +115,22 @@ else:
 users = db.query(models.User).all()
 student_users = [u for u in users if u.role in (models.UserRole.student, models.UserRole.staff)]
 
+# ── Coordinate helper ─────────────────────────────────────────────────────────
+def _random_campus_point(anchor_lat: float, anchor_lng: float,
+                         jitter: float = 0.0010, max_tries: int = 20):
+    """Return a (lat, lng) pair near the anchor that is strictly inside the
+    CSJMU campus polygon.  Uses reject-and-retry; falls back to the anchor
+    itself (which is guaranteed inside) if every random attempt lands outside.
+    """
+    for _ in range(max_tries):
+        lat = anchor_lat + random.uniform(-jitter, jitter)
+        lng = anchor_lng + random.uniform(-jitter, jitter)
+        if is_inside_campus(lat, lng):
+            return lat, lng
+    # Anchor is validated at definition time — always safe as a fallback.
+    return anchor_lat, anchor_lng
+
+
 # ── Tickets ───────────────────────────────────────────────────────────────────
 CATEGORIES = list(models.TicketCategory)
 STATUSES = [models.TicketStatus.raised, models.TicketStatus.in_progress, models.TicketStatus.resolved]
@@ -131,9 +151,8 @@ if existing_tickets == 0:
         created_at = datetime.datetime.utcnow() - datetime.timedelta(days=days_ago)
         resolved_at = created_at + datetime.timedelta(hours=random.randint(2, 48)) if status == models.TicketStatus.resolved else None
 
-        # Random lat/lng near dept centre
-        lat = dept.lat + random.uniform(-0.0015, 0.0015)
-        lng = dept.lng + random.uniform(-0.0015, 0.0015)
+        # Random lat/lng near dept centre — validated inside CSJMU polygon
+        lat, lng = _random_campus_point(dept.lat, dept.lng)
 
         info = ACTION_MAP[cat.value]
         ticket = models.Ticket(

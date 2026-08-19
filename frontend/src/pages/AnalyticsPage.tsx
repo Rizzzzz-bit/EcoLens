@@ -1,4 +1,4 @@
-https://github.com/Rizzzzz-bit/EcoCSJMU.gitimport { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import DashboardLayout from '../layouts/DashboardLayout'
 import * as api from '../api'
 import type { AnalyticsSummary } from '../types'

@@ -12,12 +12,14 @@ import type { Ticket, UserBadge, LeaderboardUser } from '../types'
 export default function StudentDashboard() {
   const { user } = useAuth()
   const [tickets, setTickets] = useState<Ticket[]>([])
+  const [reportCount, setReportCount] = useState<number | null>(null)
   const [badges, setBadges] = useState<UserBadge[]>([])
   const [leaders, setLeaders] = useState<LeaderboardUser[]>([])
   const [tips, setTips] = useState<string[]>([])
 
   useEffect(() => {
     api.getTickets({ limit: 5 }).then(r => setTickets(r.data))
+    api.getMyTicketCount().then(r => setReportCount(r.data.count))
     api.getMyBadges().then(r => setBadges(r.data))
     api.getLeaderboardUsers().then(r => setLeaders(r.data.slice(0, 10)))
     api.getMyRecommendations().then(r => setTips(r.data.tips))
@@ -50,7 +52,7 @@ export default function StudentDashboard() {
               <div className="text-sm text-gray-500">Total Eco Points</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-blue-600">{tickets.length}</div>
+              <div className="text-3xl font-bold text-blue-600">{reportCount ?? '…'}</div>
               <div className="text-sm text-gray-500">Reports Submitted</div>
             </div>
           </div>

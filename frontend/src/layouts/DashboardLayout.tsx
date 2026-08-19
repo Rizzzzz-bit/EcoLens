@@ -97,10 +97,10 @@ export default function DashboardLayout({ children }: Props) {
       <main className="flex-1 overflow-y-auto">
         {children}
 
-        {/* Floating report button */}
+        {/* Floating report button — z-[1001] clears Leaflet's own max z-index of 1000 */}
         <Link
           to="/report"
-          className="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white rounded-full w-14 h-14 flex items-center justify-center text-2xl shadow-lg transition-colors z-50"
+          className="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white rounded-full w-14 h-14 flex items-center justify-center text-2xl shadow-lg transition-colors z-[1001]"
           title="Report an issue"
         >
           📷

@@ -11,14 +11,25 @@ A full-stack web application where students and staff photograph waste or resour
 ## Quick Start (Docker)
 
 ```bash
-# 1. Start all services
+# 1. Create the required environment files
+echo "POSTGRES_USER=ecocsjmu
+POSTGRES_PASSWORD=ecocsjmu
+POSTGRES_DB=ecocsjmu" > .env
+
+echo "DATABASE_URL=postgresql://ecocsjmu:ecocsjmu@db:5432/ecocsjmu
+SECRET_KEY=supersecretkey-change-in-production
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+UPLOAD_DIR=uploads" > backend/.env
+
+# 2. Build and start all services
 docker-compose up --build
 
-# 2. Seed the database (first time only)
+# 3. Seed the database (first time only, in a new terminal)
 docker-compose exec backend python -m scripts.seed
 
-# 3. Open the app
-open http://localhost:5173
+# 4. Open the app
+open http://localhost
 ```
 
 ## Demo Login Credentials (password: `password123`)

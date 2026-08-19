@@ -8,8 +8,9 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 from app.db import get_db
 from app.dependencies import get_current_user, require_role
-from app.ai.classifier import classify_image
+from app.ai.classifier import verify_and_extract_result
 from app.services.gamification import award_points
+from app.config.campus import is_inside_campus
 
 router = APIRouter(prefix="/tickets", tags=["tickets"])
 
@@ -28,11 +29,27 @@ async def create_ticket(
     lat: float = Form(...),
     lng: float = Form(...),
     image: UploadFile = File(...),
+    classification_token: str = Form(...),
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
+    # ── Geofence check (server-side; cannot be bypassed by the frontend) ──────
+    if not is_inside_campus(lat, lng):
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "Submitted coordinates are outside the CSJMU campus boundary. "
+                "Reports must be submitted from within the campus."
+            ),
+        )
+
     image_bytes = await image.read()
-    ai_result = classify_image(image_bytes)
+
+    # Verify the signed classification token and the image hash binding.
+    # This is the ONLY path that extracts category/recommendation data —
+    # Gemini is NOT called here.  verify_and_extract_result also enforces
+    # relevant=True, so irrelevant images are still rejected.
+    ai_result = verify_and_extract_result(classification_token, image_bytes)
 
     # Save image
     ext = os.path.splitext(image.filename or "upload.jpg")[1] or ".jpg"
@@ -60,7 +77,7 @@ async def create_ticket(
         image_url=image_url,
         lat=lat,
         lng=lng,
-        ai_confidence=ai_result["confidence"],
+        ai_confidence=None,  # confidence no longer returned by Gemini classifier
     )
     db.add(ticket)
     db.commit()
@@ -112,6 +129,40 @@ def heatmap(db: Session = Depends(get_db), _: models.User = Depends(get_current_
         )
         for t in tickets
     ]
+
+
+@router.get("/map-points", response_model=List[schemas.TicketMapPoint])
+def map_points(
+    db: Session = Depends(get_db),
+    _: models.User = Depends(get_current_user),
+):
+    """Return minimal location + category data for all unresolved tickets.
+
+    No role filter is applied — this endpoint is intentionally campus-wide so
+    that CampusMap can render a complete picture of open issues regardless of
+    the logged-in user's role.
+
+    Only id, lat, lng, category, and status are returned.  No reporter PII,
+    no department details, no free-text recommendation or eco_tip fields.
+    """
+    tickets = db.query(models.Ticket).filter(
+        models.Ticket.status != models.TicketStatus.resolved
+    ).all()
+    return tickets
+
+
+@router.get("/my-count", response_model=schemas.TicketCountOut)
+def my_ticket_count(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """Return the total number of tickets submitted by the authenticated user."""
+    count = (
+        db.query(models.Ticket)
+        .filter(models.Ticket.reporter_id == current_user.id)
+        .count()
+    )
+    return {"count": count}
 
 
 @router.get("/{ticket_id}", response_model=schemas.TicketOut)
