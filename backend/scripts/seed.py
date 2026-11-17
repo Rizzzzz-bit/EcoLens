@@ -76,10 +76,21 @@ USERS = [
     {"name": "User",     "email": "user@ecolens.in",  "role": "student", "dept": "Computer Science Block"},
 ]
 
-existing_users = db.query(models.User).count()
-if existing_users == 0:
-    for u in USERS:
-        dept_id = dept_map[u["dept"]].id if u["dept"] else None
+# Always sync users to exactly the 2 defined credentials.
+# Delete any user whose email is NOT in our target list, then upsert the 2.
+target_emails = {u["email"] for u in USERS}
+db.query(models.User).filter(models.User.email.notin_(target_emails)).delete(synchronize_session=False)
+db.commit()
+
+for u in USERS:
+    existing = db.query(models.User).filter(models.User.email == u["email"]).first()
+    dept_id = dept_map[u["dept"]].id if u["dept"] else None
+    if existing:
+        existing.name = u["name"]
+        existing.role = models.UserRole(u["role"])
+        existing.department_id = dept_id
+        existing.hashed_password = hash_password("password123")
+    else:
         db.add(models.User(
             name=u["name"],
             email=u["email"],
@@ -87,10 +98,8 @@ if existing_users == 0:
             role=models.UserRole(u["role"]),
             department_id=dept_id,
         ))
-    db.commit()
-    print(f"✓ {len(USERS)} users seeded  (password: password123)")
-else:
-    print("  Users already seeded, skipping")
+db.commit()
+print(f"✓ Users synced to {len(USERS)} credentials (password: password123)")
 
 users = db.query(models.User).all()
 student_users = [u for u in users if u.role in (models.UserRole.student, models.UserRole.staff)]
