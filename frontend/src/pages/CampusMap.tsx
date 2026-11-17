@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { MapContainer, TileLayer, CircleMarker, Circle, Popup, Marker, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import DashboardLayout from '../layouts/DashboardLayout'
@@ -6,25 +6,46 @@ import * as api from '../api'
 import type { HeatmapPoint, MapPoint, GpsLocation } from '../types'
 import 'leaflet/dist/leaflet.css'
 
-// Real CSJMU campus centre (OSM way 506689489)
 const CAMPUS_CENTER: [number, number] = [26.50302, 80.26749]
 
-// ---------------------------------------------------------------------------
-// DEV-ONLY: in-memory test markers — NEVER written to the database.
-// To activate: append ?testMarkers=1 to the URL (e.g. /map?testMarkers=1).
-// These are hardcoded inside the CSJMU campus polygon so they always appear
-// in the correct viewport regardless of what the database contains.
-// Remove this block (and its JSX usage below) before going to production.
-// ---------------------------------------------------------------------------
-const DEV_TEST_MARKERS: Array<{ category: string; lat: number; lng: number; label: string }> = [
-  { category: 'organic',          lat: 26.5055, lng: 80.2700, label: 'TEST: organic → green' },
-  { category: 'recyclable',       lat: 26.5040, lng: 80.2720, label: 'TEST: recyclable → blue' },
-  { category: 'hazardous',        lat: 26.5025, lng: 80.2695, label: 'TEST: hazardous → red' },
-  { category: 'general_waste',    lat: 26.5010, lng: 80.2660, label: 'TEST: general_waste → grey' },
-  { category: 'resource_wastage', lat: 26.5030, lng: 80.2640, label: 'TEST: resource_wastage → orange' },
-]
+const CATEGORY_COLORS: Record<string, string> = {
+  organic: '#22c55e',
+  recyclable: '#3b82f6',
+  hazardous: '#ef4444',
+  general_waste: '#6b7280',
+  resource_wastage: '#f59e0b',
+}
 
-// Blue pulsing icon for the user-location marker
+const CATEGORY_LABELS: Record<string, string> = {
+  organic: 'Organic Waste',
+  recyclable: 'Recyclable',
+  hazardous: 'Hazardous',
+  general_waste: 'General Waste',
+  resource_wastage: 'Resource Wastage',
+}
+
+const CATEGORIES = Object.keys(CATEGORY_COLORS)
+
+// ── Demo markers ─────────────────────────────────────────────────────────────
+// Generate N random demo markers scattered near a center point.
+// Regenerated each page load (useMemo with no deps) — small jitter so they
+// never land on the exact same spot.
+function makeDemoMarkers(
+  centerLat: number,
+  centerLng: number,
+  count = 8,
+): Array<{ id: string; category: string; lat: number; lng: number }> {
+  // Seeded-ish shuffle so we always get one of each category first
+  const cats = [...CATEGORIES, ...CATEGORIES].slice(0, count)
+  return cats.map((category, i) => ({
+    id: `demo-${i}`,
+    category,
+    lat: centerLat + (Math.random() - 0.5) * 0.012,
+    lng: centerLng + (Math.random() - 0.5) * 0.014,
+  }))
+}
+
+// Blue dot icon for user location
 const USER_LOCATION_ICON = L.divIcon({
   className: '',
   html: `<div style="
@@ -38,16 +59,7 @@ const USER_LOCATION_ICON = L.divIcon({
   iconAnchor: [8, 8],
 })
 
-const CATEGORY_COLORS: Record<string, string> = {
-  organic: '#22c55e',
-  recyclable: '#3b82f6',
-  hazardous: '#ef4444',
-  general_waste: '#6b7280',
-  resource_wastage: '#f59e0b',
-}
-
 function HeatLayer({ points }: { points: HeatmapPoint[] }) {
-  // Render heat as circles with opacity proportional to weight
   return (
     <>
       {points.map((p, i) => (
@@ -62,7 +74,6 @@ function HeatLayer({ points }: { points: HeatmapPoint[] }) {
   )
 }
 
-/** Flies the map to the given position when it changes. */
 function FlyToLocation({ location }: { location: GpsLocation }) {
   const map = useMap()
   useEffect(() => {
@@ -71,25 +82,16 @@ function FlyToLocation({ location }: { location: GpsLocation }) {
   return null
 }
 
-/** Request the user's GPS location once. */
 function useUserLocation(): GpsLocation | null {
   const [location, setLocation] = useState<GpsLocation | null>(null)
-
   useEffect(() => {
     if (!navigator.geolocation) return
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocation({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          accuracy: pos.coords.accuracy,
-        })
-      },
-      () => { /* permission denied / unavailable — silently omit the marker */ },
+      (pos) => setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }),
+      () => {},
       { timeout: 10000, maximumAge: 30000, enableHighAccuracy: true },
     )
   }, [])
-
   return location
 }
 
@@ -109,11 +111,21 @@ export default function CampusMap() {
     return () => clearInterval(id)
   }, [])
 
-  const showTestMarkers = new URLSearchParams(window.location.search).get('testMarkers') === '1'
+  // Demo markers centered on user location if available, else campus center
+  const demoCenter = userLocation
+    ? [userLocation.lat, userLocation.lng] as [number, number]
+    : CAMPUS_CENTER
+
+  // useMemo so they don't re-randomise on every render, only when center changes
+  const demoMarkers = useMemo(
+    () => makeDemoMarkers(demoCenter[0], demoCenter[1], 8),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [demoCenter[0].toFixed(3), demoCenter[1].toFixed(3)],
+  )
 
   return (
     <DashboardLayout>
-      <div className="p-6 max-w-5xl mx-auto space-y-4">
+      <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl md:text-2xl font-bold text-gray-800">🗺️ Map</h1>
@@ -121,13 +133,6 @@ export default function CampusMap() {
           </div>
           <div className="text-sm text-gray-500">{heatPoints.length} open issues</div>
         </div>
-
-        {/* DEV TEST BANNER — only shown when ?testMarkers=1 */}
-        {showTestMarkers && (
-          <div className="rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-2 text-xs text-yellow-800 font-medium">
-            ⚠️ DEV MODE — Showing 5 in-memory test markers (one per category). Not in the database. Remove <code>?testMarkers=1</code> to hide.
-          </div>
-        )}
 
         {/* Legend */}
         <div className="flex flex-wrap gap-3">
@@ -143,74 +148,43 @@ export default function CampusMap() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border overflow-hidden" style={{ height: 'calc(100vh - 220px)', minHeight: 300 }}>
+        <div className="bg-white rounded-2xl shadow-sm border overflow-hidden" style={{ height: 'calc(100vh - 240px)', minHeight: 300 }}>
           <MapContainer center={CAMPUS_CENTER} zoom={15} style={{ height: '100%', width: '100%' }}>
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; OpenStreetMap contributors'
             />
-            {/* Fly to user's live location as soon as GPS is available */}
+
             {userLocation && <FlyToLocation location={userLocation} />}
             <HeatLayer points={heatPoints} />
 
-            {/* DEV-ONLY test markers — rendered above the heat layer, never in DB */}
-            {showTestMarkers && DEV_TEST_MARKERS.map((m) => (
+            {/* ── Demo markers (always visible, prototype only) ── */}
+            {demoMarkers.map((m) => (
               <CircleMarker
-                key={`dev-${m.category}`}
+                key={m.id}
                 center={[m.lat, m.lng]}
-                radius={10}
+                radius={7}
                 pathOptions={{
                   color: CATEGORY_COLORS[m.category],
                   fillColor: CATEGORY_COLORS[m.category],
-                  fillOpacity: 1,
-                  weight: 2,
+                  fillOpacity: 0.85,
+                  weight: 1.5,
                 }}
               >
-                <Tooltip permanent direction="top" offset={[0, -12]} className="text-xs font-bold">
-                  {m.label}
-                </Tooltip>
                 <Popup>
-                  <div className="text-sm">
-                    <div className="font-bold text-yellow-700">🧪 DEV TEST MARKER</div>
-                    <div className="mt-1"><b>Category:</b> {m.category}</div>
-                    <div><b>Colour:</b> {CATEGORY_COLORS[m.category]}</div>
-                    <div><b>Coords:</b> {m.lat}, {m.lng}</div>
-                    <div className="text-xs text-gray-400 mt-1">Not stored in database</div>
+                  <div className="text-sm space-y-1">
+                    <div className="font-bold" style={{ color: CATEGORY_COLORS[m.category] }}>
+                      {CATEGORY_LABELS[m.category]}
+                    </div>
+                    <div className="text-xs text-gray-500 italic">
+                      📌 Demo data — for prototyping only
+                    </div>
                   </div>
                 </Popup>
               </CircleMarker>
             ))}
 
-            {/* User location — accuracy circle + dot marker */}
-            {userLocation && (
-              <>
-                <Circle
-                  center={[userLocation.lat, userLocation.lng]}
-                  radius={userLocation.accuracy}
-                  pathOptions={{ color: '#2563eb', fillColor: '#2563eb', fillOpacity: 0.1, weight: 1, dashArray: '4 3' }}
-                />
-                <Marker
-                  position={[userLocation.lat, userLocation.lng]}
-                  icon={USER_LOCATION_ICON}
-                >
-                  <Tooltip permanent direction="top" offset={[0, -10]} className="text-xs">
-                    Your Location
-                  </Tooltip>
-                  <Popup>
-                    <div className="text-sm">
-                      <div className="font-bold">📍 Your Location</div>
-                      <div className="text-gray-600 mt-1">
-                        {userLocation.lat.toFixed(5)}, {userLocation.lng.toFixed(5)}
-                      </div>
-                      <div className="text-xs text-gray-400 mt-1">
-                        Accuracy: ±{Math.round(userLocation.accuracy)} m
-                      </div>
-                    </div>
-                  </Popup>
-                </Marker>
-              </>
-            )}
-
+            {/* Real DB map points */}
             {mapPoints.map(p => (
               <CircleMarker
                 key={p.id}
@@ -226,14 +200,37 @@ export default function CampusMap() {
                 <Popup>
                   <div className="text-sm">
                     <div className="font-bold">#{p.id} — {p.category.replace('_', ' ')}</div>
-                    <div className="text-xs text-gray-400 mt-1">
-                      Status: {p.status}
-                    </div>
+                    <div className="text-xs text-gray-400 mt-1">Status: {p.status}</div>
                   </div>
                 </Popup>
               </CircleMarker>
             ))}
+
+            {/* User location dot */}
+            {userLocation && (
+              <>
+                <Circle
+                  center={[userLocation.lat, userLocation.lng]}
+                  radius={userLocation.accuracy}
+                  pathOptions={{ color: '#2563eb', fillColor: '#2563eb', fillOpacity: 0.1, weight: 1, dashArray: '4 3' }}
+                />
+                <Marker position={[userLocation.lat, userLocation.lng]} icon={USER_LOCATION_ICON}>
+                  <Tooltip permanent direction="top" offset={[0, -10]} className="text-xs">
+                    Your Location
+                  </Tooltip>
+                </Marker>
+              </>
+            )}
           </MapContainer>
+        </div>
+
+        {/* Prototype note */}
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs text-amber-800 flex items-start gap-2">
+          <span className="mt-0.5 flex-shrink-0">⚠️</span>
+          <span>
+            <strong>Prototype Note:</strong> The coloured markers shown on this map are demo data for visual testing only.
+            Real-time markers will appear here automatically once actual reports are submitted through the app.
+          </span>
         </div>
       </div>
     </DashboardLayout>
