@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { MapContainer, TileLayer, CircleMarker, Circle, Popup, Marker, Tooltip } from 'react-leaflet'
+import { MapContainer, TileLayer, CircleMarker, Circle, Popup, Marker, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import DashboardLayout from '../layouts/DashboardLayout'
 import * as api from '../api'
@@ -62,7 +62,16 @@ function HeatLayer({ points }: { points: HeatmapPoint[] }) {
   )
 }
 
-/** Request the user's GPS location once.  Never falls back to a fake coord. */
+/** Flies the map to the given position when it changes. */
+function FlyToLocation({ location }: { location: GpsLocation }) {
+  const map = useMap()
+  useEffect(() => {
+    map.flyTo([location.lat, location.lng], 16, { animate: true, duration: 1.2 })
+  }, [location, map])
+  return null
+}
+
+/** Request the user's GPS location once. */
 function useUserLocation(): GpsLocation | null {
   const [location, setLocation] = useState<GpsLocation | null>(null)
 
@@ -79,7 +88,7 @@ function useUserLocation(): GpsLocation | null {
       () => { /* permission denied / unavailable — silently omit the marker */ },
       { timeout: 10000, maximumAge: 30000, enableHighAccuracy: true },
     )
-  }, [])   // run once on mount only; no repeated recentring
+  }, [])
 
   return location
 }
@@ -135,11 +144,13 @@ export default function CampusMap() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border overflow-hidden" style={{ height: 500 }}>
-          <MapContainer center={CAMPUS_CENTER} zoom={16} style={{ height: '100%', width: '100%' }}>
+          <MapContainer center={CAMPUS_CENTER} zoom={15} style={{ height: '100%', width: '100%' }}>
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; OpenStreetMap contributors'
             />
+            {/* Fly to user's live location as soon as GPS is available */}
+            {userLocation && <FlyToLocation location={userLocation} />}
             <HeatLayer points={heatPoints} />
 
             {/* DEV-ONLY test markers — rendered above the heat layer, never in DB */}
