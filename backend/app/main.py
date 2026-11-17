@@ -99,3 +99,15 @@ app.include_router(users.router)
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/debug-users")
+def debug_users():
+    """Temporary debug endpoint — shows all users in DB."""
+    from app.db import SessionLocal
+    from app import models
+    db = SessionLocal()
+    users = db.query(models.User).all()
+    result = [{"id": u.id, "email": u.email, "role": u.role, "name": u.name} for u in users]
+    db.close()
+    return {"count": len(result), "users": result}
