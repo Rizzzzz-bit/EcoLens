@@ -103,7 +103,6 @@ def health():
 
 @app.get("/debug-users")
 def debug_users():
-    """Temporary debug endpoint — shows all users in DB."""
     from app.db import SessionLocal
     from app import models
     db = SessionLocal()
@@ -111,3 +110,46 @@ def debug_users():
     result = [{"id": u.id, "email": u.email, "role": u.role, "name": u.name} for u in users]
     db.close()
     return {"count": len(result), "users": result}
+
+
+@app.post("/admin/force-sync-users")
+def force_sync_users():
+    """Force delete all users except admin+user and upsert them with password123."""
+    from app.db import SessionLocal
+    from app import models
+    from app.dependencies import hash_password
+
+    USERS = [
+        {"name": "Admin", "email": "admin@ecolens.in", "role": models.UserRole.admin,   "dept_name": None},
+        {"name": "User",  "email": "user@ecolens.in",  "role": models.UserRole.student, "dept_name": "Computer Science Block"},
+    ]
+
+    db = SessionLocal()
+    try:
+        target_emails = {u["email"] for u in USERS}
+        deleted = db.query(models.User).filter(models.User.email.notin_(target_emails)).delete(synchronize_session=False)
+        db.commit()
+
+        for u in USERS:
+            dept = db.query(models.Department).filter(models.Department.name == u["dept_name"]).first() if u["dept_name"] else None
+            existing = db.query(models.User).filter(models.User.email == u["email"]).first()
+            if existing:
+                existing.name = u["name"]
+                existing.role = u["role"]
+                existing.hashed_password = hash_password("password123")
+                existing.department_id = dept.id if dept else None
+            else:
+                db.add(models.User(
+                    name=u["name"],
+                    email=u["email"],
+                    hashed_password=hash_password("password123"),
+                    role=u["role"],
+                    department_id=dept.id if dept else None,
+                ))
+        db.commit()
+
+        users = db.query(models.User).all()
+        result = [{"id": u.id, "email": u.email, "role": u.role} for u in users]
+        return {"deleted_old": deleted, "users": result}
+    finally:
+        db.close()
