@@ -31,45 +31,54 @@ export default function DashboardLayout({ children }: Props) {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
 
-      {/* ── Desktop Sidebar (hidden on mobile) ── */}
-      <aside className="hidden md:flex w-56 flex-shrink-0 bg-white border-r border-gray-200 flex-col">
-        <div className="p-4 border-b border-gray-100">
-          <div className="text-lg font-bold text-green-700">🌿 EcoLens</div>
-          <div className="text-xs text-gray-500 mt-0.5">Sustainability Platform</div>
+      {/* ── Desktop Sidebar ── */}
+      <aside className="hidden md:flex w-60 flex-shrink-0 flex-col"
+        style={{ background: 'linear-gradient(180deg, #052e16 0%, #064e3b 50%, #065f46 100%)' }}>
+
+        {/* Logo */}
+        <div className="px-5 py-5 border-b border-white/10">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-green-400/20 flex items-center justify-center text-lg">🌿</div>
+            <div>
+              <div className="text-white font-bold text-base tracking-tight">EcoLens</div>
+              <div className="text-green-400/70 text-[10px]">Sustainability Platform</div>
+            </div>
+          </div>
         </div>
 
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {links.map(l => (
-            <Link
-              key={l.path}
-              to={l.path}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors
-                ${location.pathname === l.path
-                  ? 'bg-green-50 text-green-700 font-semibold'
-                  : 'text-gray-600 hover:bg-gray-50'}`}
-            >
-              <span>{l.icon}</span>
-              {l.label}
-            </Link>
-          ))}
+        {/* Nav links */}
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {links.map(l => {
+            const active = location.pathname === l.path
+            return (
+              <Link key={l.path} to={l.path}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                  ${active
+                    ? 'bg-white/15 text-white shadow-sm'
+                    : 'text-green-200/70 hover:bg-white/8 hover:text-white'}`}>
+                <span className="text-base w-5 text-center">{l.icon}</span>
+                {l.label}
+                {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-green-400" />}
+              </Link>
+            )
+          })}
         </nav>
 
-        <div className="p-3 border-t border-gray-100">
-          <div className="flex items-center gap-2 px-2 py-2 rounded-lg bg-gray-50 mb-2">
-            <div className="w-7 h-7 rounded-full bg-green-200 flex items-center justify-center text-xs font-bold text-green-800">
-              {user.name[0]}
+        {/* User info */}
+        <div className="px-3 py-4 border-t border-white/10">
+          <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-white/8 mb-2">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
+              {user.name[0].toUpperCase()}
             </div>
-            <div className="min-w-0">
-              <div className="text-xs font-semibold text-gray-800 truncate">{user.name}</div>
-              <div className="text-xs text-gray-400">{user.role}</div>
+            <div className="min-w-0 flex-1">
+              <div className="text-xs font-semibold text-white truncate">{user.name}</div>
+              <div className="text-[10px] text-green-400/70 capitalize">{user.role}</div>
             </div>
-            <div className="ml-auto text-xs font-bold text-green-700">{user.total_points}pts</div>
+            <div className="text-xs font-bold text-green-300">{user.total_points}pts</div>
           </div>
-          <button
-            onClick={() => { logout(); navigate('/login') }}
-            className="w-full text-xs text-gray-400 hover:text-red-500 text-left px-2 py-1"
-          >
-            Sign out
+          <button onClick={() => { logout(); navigate('/login') }}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-red-300/70 hover:text-red-300 hover:bg-red-500/10 transition-colors">
+            <span>🚪</span> Sign out
           </button>
         </div>
       </aside>
@@ -79,25 +88,22 @@ export default function DashboardLayout({ children }: Props) {
         {children}
       </main>
 
-      {/* ── Mobile Bottom Nav (hidden on desktop) ── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[1002] flex">
-        {links.map(l => (
-          <Link
-            key={l.path}
-            to={l.path}
-            className={`flex-1 flex flex-col items-center justify-center py-2 text-xs transition-colors
-              ${location.pathname === l.path
-                ? 'text-green-700 font-semibold'
-                : 'text-gray-400'}`}
-          >
-            <span className="text-xl leading-none mb-0.5">{l.icon}</span>
-            <span className="truncate w-full text-center">{l.label}</span>
-          </Link>
-        ))}
-        <button
-          onClick={() => { logout(); navigate('/login') }}
-          className="flex-1 flex flex-col items-center justify-center py-2 text-xs text-gray-400"
-        >
+      {/* ── Mobile Bottom Nav ── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[1002] flex"
+        style={{ background: 'rgba(5,46,22,0.97)', backdropFilter: 'blur(12px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+        {links.map(l => {
+          const active = location.pathname === l.path
+          return (
+            <Link key={l.path} to={l.path}
+              className={`flex-1 flex flex-col items-center justify-center py-2.5 text-[10px] font-medium transition-colors
+                ${active ? 'text-green-400' : 'text-green-200/50'}`}>
+              <span className={`text-xl leading-none mb-0.5 ${active ? 'scale-110' : ''} transition-transform`}>{l.icon}</span>
+              <span className="truncate w-full text-center">{l.label}</span>
+            </Link>
+          )
+        })}
+        <button onClick={() => { logout(); navigate('/login') }}
+          className="flex-1 flex flex-col items-center justify-center py-2.5 text-[10px] text-red-300/60 hover:text-red-300">
           <span className="text-xl leading-none mb-0.5">🚪</span>
           <span>Logout</span>
         </button>
