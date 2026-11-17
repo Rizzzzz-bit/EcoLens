@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 const ROLE_HOME: Record<string, string> = {
-  student: '/dashboard', staff: '/dashboard',
-  dept_staff: '/dept', warden: '/warden', admin: '/admin',
+  student: '/dashboard',
+  admin: '/admin',
 }
 
 export default function LoginPage() {
@@ -33,9 +33,7 @@ export default function LoginPage() {
   }
 
   const demoLogins = [
-    { label: 'Student', email: 'arjun@student.ecolens.in' },
-    { label: 'Dept Staff', email: 'verma@ecolens.in' },
-    { label: 'Warden', email: 'warden_a@ecolens.in' },
+    { label: 'User', email: 'user@ecolens.in' },
     { label: 'Admin', email: 'admin@ecolens.in' },
   ]
 

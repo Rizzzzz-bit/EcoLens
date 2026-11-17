@@ -3,9 +3,6 @@ import { useAuth } from '../contexts/AuthContext'
 
 const ROLE_HOME: Record<string, string> = {
   student: '/dashboard',
-  staff: '/dashboard',
-  dept_staff: '/dept',
-  warden: '/warden',
   admin: '/admin',
 }
 

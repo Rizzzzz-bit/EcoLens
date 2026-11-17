@@ -10,25 +10,6 @@ const NAV: Record<string, { label: string; path: string; icon: string }[]> = {
     { label: 'Campus Map', path: '/map', icon: '🗺️' },
     { label: 'Leaderboard', path: '/leaderboard', icon: '🏆' },
   ],
-  staff: [
-    { label: 'Dashboard', path: '/dashboard', icon: '🏠' },
-    { label: 'Report Issue', path: '/report', icon: '📷' },
-    { label: 'My Tickets', path: '/my-tickets', icon: '🎫' },
-    { label: 'Campus Map', path: '/map', icon: '🗺️' },
-    { label: 'Leaderboard', path: '/leaderboard', icon: '🏆' },
-  ],
-  dept_staff: [
-    { label: 'Dept Portal', path: '/dept', icon: '🏢' },
-    { label: 'Report Issue', path: '/report', icon: '📷' },
-    { label: 'Campus Map', path: '/map', icon: '🗺️' },
-    { label: 'Leaderboard', path: '/leaderboard', icon: '🏆' },
-  ],
-  warden: [
-    { label: 'Warden Portal', path: '/warden', icon: '🏠' },
-    { label: 'Report Issue', path: '/report', icon: '📷' },
-    { label: 'Campus Map', path: '/map', icon: '🗺️' },
-    { label: 'Leaderboard', path: '/leaderboard', icon: '🏆' },
-  ],
   admin: [
     { label: 'Admin', path: '/admin', icon: '⚙️' },
     { label: 'Campus Map', path: '/map', icon: '🗺️' },

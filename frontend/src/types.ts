@@ -2,7 +2,7 @@ export interface User {
   id: number
   name: string
   email: string
-  role: 'student' | 'staff' | 'dept_staff' | 'warden' | 'admin'
+  role: 'student' | 'admin'
   department_id: number | null
   total_points: number
   sustainability_score: number

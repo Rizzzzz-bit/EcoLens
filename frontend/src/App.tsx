@@ -5,8 +5,6 @@ import LoginPage from './pages/LoginPage'
 import StudentDashboard from './pages/StudentDashboard'
 import ReportPage from './pages/ReportPage'
 import MyTickets from './pages/MyTickets'
-import DeptPortal from './pages/DeptPortal'
-import WardenPortal from './pages/WardenPortal'
 import AdminDashboard from './pages/AdminDashboard'
 import LeaderboardPage from './pages/LeaderboardPage'
 import AnalyticsPage from './pages/AnalyticsPage'
@@ -20,20 +18,10 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<Navigate to="/login" replace />} />
 
-          {/* Student / Staff */}
-          <Route element={<PrivateRoute allowedRoles={['student', 'staff']} />}>
+          {/* User (Student) */}
+          <Route element={<PrivateRoute allowedRoles={['student']} />}>
             <Route path="/dashboard" element={<StudentDashboard />} />
             <Route path="/my-tickets" element={<MyTickets />} />
-          </Route>
-
-          {/* Dept Staff */}
-          <Route element={<PrivateRoute allowedRoles={['dept_staff']} />}>
-            <Route path="/dept" element={<DeptPortal />} />
-          </Route>
-
-          {/* Warden */}
-          <Route element={<PrivateRoute allowedRoles={['warden']} />}>
-            <Route path="/warden" element={<WardenPortal />} />
           </Route>
 
           {/* Admin */}
