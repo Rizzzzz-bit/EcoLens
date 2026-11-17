@@ -1,10 +1,13 @@
 import os
+import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.db import engine, Base
 from app.routers import auth, tickets, ai, buildings, analytics, leaderboard, users
+
+logger = logging.getLogger(__name__)
 
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
 
@@ -14,11 +17,29 @@ _raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost,http://localhost:8
 ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 
 
+def _auto_seed():
+    """Seed demo data if the database is empty. Safe to run on every startup."""
+    try:
+        from app.db import SessionLocal
+        from app import models
+        db = SessionLocal()
+        if db.query(models.User).count() == 0:
+            logger.info("Empty database detected — running seed...")
+            import scripts.seed  # noqa: F401  runs the seed script top-level
+            logger.info("Seed complete.")
+        else:
+            logger.info("Database already seeded — skipping.")
+        db.close()
+    except Exception as e:
+        logger.warning(f"Auto-seed failed (non-fatal): {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Create all tables on startup
     Base.metadata.create_all(bind=engine)
     os.makedirs(UPLOAD_DIR, exist_ok=True)
+    _auto_seed()
     yield
 
 
