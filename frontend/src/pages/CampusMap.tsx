@@ -281,7 +281,7 @@ export default function CampusMap() {
         {/* ── Header ── */}
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-800">🗺️ Campus Issue Map</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-800">🗺️ Issue Map</h1>
             <p className="text-sm text-gray-500">
               Live issue heatmap · auto-refreshes every 60 s ·{' '}
               <span className="text-gray-400">last at {lastRefresh.toLocaleTimeString()}</span>

@@ -60,9 +60,9 @@ export default function LeaderboardPage() {
           <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
 
           <div className="relative z-10">
-            <p className="text-green-400 text-xs font-semibold uppercase tracking-widest mb-1">Campus Rankings</p>
+            <p className="text-green-400 text-xs font-semibold uppercase tracking-widest mb-1">Rankings</p>
             <h1 className="text-2xl font-extrabold text-white mb-1">🏆 Eco Leaderboard</h1>
-            <p className="text-green-300/70 text-sm mb-4">Top contributors making a real difference on campus.</p>
+            <p className="text-green-300/70 text-sm mb-4">Top contributors making a real difference.</p>
 
             {/* Quick stats */}
             <div className="flex gap-2 flex-wrap">
