@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react'
 import DashboardLayout from '../layouts/DashboardLayout'
 import TicketCard from '../components/TicketCard'
-import { UserLeaderboard, DeptLeaderboard } from '../components/Leaderboard'
+import { UserLeaderboard } from '../components/Leaderboard'
 import * as api from '../api'
-import type { Ticket, TicketStatus, LeaderboardUser, LeaderboardDepartment } from '../types'
+import type { Ticket, TicketStatus, LeaderboardUser } from '../types'
 
 export default function AdminDashboard() {
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [users, setUsers] = useState<LeaderboardUser[]>([])
-  const [depts, setDepts] = useState<LeaderboardDepartment[]>([])
-  const [tab, setTab] = useState<'tickets' | 'users' | 'depts'>('tickets')
+  const [tab, setTab] = useState<'tickets' | 'users'>('tickets')
   const [filterStatus, setFilterStatus] = useState<TicketStatus | ''>('')
   const [updating, setUpdating] = useState<number | null>(null)
 
@@ -20,7 +19,6 @@ export default function AdminDashboard() {
   useEffect(() => {
     load()
     api.getLeaderboardUsers().then(r => setUsers(r.data))
-    api.getLeaderboardDepts().then(r => setDepts(r.data))
   }, [])
 
   useEffect(() => { load() }, [filterStatus])
@@ -62,11 +60,11 @@ export default function AdminDashboard() {
         {/* Tabs */}
         <div className="bg-white rounded-2xl shadow-sm border">
           <div className="flex border-b overflow-x-auto">
-            {(['tickets', 'users', 'depts'] as const).map(t => (
+            {(['tickets', 'users'] as const).map(t => (
               <button key={t} onClick={() => setTab(t)}
                 className={`flex-shrink-0 px-4 py-3 text-sm font-medium border-b-2 transition-colors
                   ${tab === t ? 'border-green-500 text-green-700' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
-                {t === 'tickets' ? '🎫 Tickets' : t === 'users' ? '👥 Users' : '🏢 Depts'}
+                {t === 'tickets' ? '🎫 Tickets' : '👥 Users'}
               </button>
             ))}
           </div>
@@ -110,7 +108,6 @@ export default function AdminDashboard() {
               </div>
             )}
             {tab === 'users' && <UserLeaderboard users={users} />}
-            {tab === 'depts' && <DeptLeaderboard departments={depts} />}
           </div>
         </div>
       </div>

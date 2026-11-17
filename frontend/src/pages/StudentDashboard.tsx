@@ -87,7 +87,7 @@ export default function StudentDashboard() {
 
         {/* Leaderboard */}
         <div className="bg-white rounded-2xl shadow-sm border p-5">
-          <h3 className="font-semibold text-gray-800 mb-4">🏆 Campus Leaderboard</h3>
+          <h3 className="font-semibold text-gray-800 mb-4">🏆 Leaderboard</h3>
           <UserLeaderboard users={leaders} highlightId={user.id} />
         </div>
       </div>
