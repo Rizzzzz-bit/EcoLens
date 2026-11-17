@@ -127,8 +127,20 @@ def force_sync_users():
     db = SessionLocal()
     try:
         target_emails = {u["email"] for u in USERS}
-        deleted = db.query(models.User).filter(models.User.email.notin_(target_emails)).delete(synchronize_session=False)
-        db.commit()
+
+        # Find user IDs to delete first
+        users_to_delete = db.query(models.User).filter(models.User.email.notin_(target_emails)).all()
+        ids_to_delete = [u.id for u in users_to_delete]
+
+        if ids_to_delete:
+            # Delete dependent rows first to avoid FK violations
+            db.query(models.UserBadge).filter(models.UserBadge.user_id.in_(ids_to_delete)).delete(synchronize_session=False)
+            db.query(models.RewardPoint).filter(models.RewardPoint.user_id.in_(ids_to_delete)).delete(synchronize_session=False)
+            db.query(models.Ticket).filter(models.Ticket.reporter_id.in_(ids_to_delete)).delete(synchronize_session=False)
+            db.query(models.User).filter(models.User.id.in_(ids_to_delete)).delete(synchronize_session=False)
+            db.commit()
+
+        deleted = len(ids_to_delete)
 
         for u in USERS:
             dept = db.query(models.Department).filter(models.Department.name == u["dept_name"]).first() if u["dept_name"] else None
