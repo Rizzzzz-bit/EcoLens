@@ -32,12 +32,12 @@ _VALID_CATEGORIES = {c.value for c in TicketCategory}
 # ── Gemini prompt ──────────────────────────────────────────────────────────────
 
 _SYSTEM_PROMPT = """\
-You are an AI assistant for EcoCSJMU, an environmental reporting platform for \
-CSJMU (Chhatrapati Shahu Ji Maharaj University) campus.
+You are an AI assistant for EcoLens, an environmental reporting platform for \
+a university campus.
 
 Your job is to analyse an uploaded image and determine:
 
-1. Whether the image is RELEVANT to EcoCSJMU.
+1. Whether the image is RELEVANT to EcoLens.
    A relevant image must clearly show one of:
    - Campus waste or litter (organic, recyclable, hazardous, or general)
    - Campus cleanliness or pollution issues

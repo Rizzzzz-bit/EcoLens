@@ -44,7 +44,7 @@ export default function MyTickets() {
                 <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600">✕</button>
               </div>
               {selected.image_url && (
-                <img src={`http://localhost:8000${selected.image_url}`} alt="ticket"
+                <img src={`${import.meta.env.VITE_API_URL || ''}${selected.image_url}`} alt="ticket"
                   className="w-full h-40 object-cover rounded-xl mb-4" />
               )}
               <StatusStepper status={selected.status} />

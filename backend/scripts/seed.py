@@ -73,27 +73,27 @@ if existing_badges == 0:
 # ── Users ─────────────────────────────────────────────────────────────────────
 USERS = [
     # Admins
-    {"name": "Admin Sharma",    "email": "admin@csjmu.ac.in",   "role": "admin",      "dept": None},
+    {"name": "Admin Sharma",    "email": "admin@ecolens.in",   "role": "admin",      "dept": None},
     # Dept staff
-    {"name": "Prof. Verma",     "email": "verma@csjmu.ac.in",   "role": "dept_staff", "dept": "Computer Science Block"},
-    {"name": "Prof. Singh",     "email": "singh@csjmu.ac.in",   "role": "dept_staff", "dept": "Engineering Block"},
-    {"name": "Dr. Gupta",       "email": "gupta@csjmu.ac.in",   "role": "dept_staff", "dept": "Science & Research Block"},
-    {"name": "Mr. Mishra",      "email": "mishra@csjmu.ac.in",  "role": "dept_staff", "dept": "Safety & Maintenance"},
+    {"name": "Prof. Verma",     "email": "verma@ecolens.in",   "role": "dept_staff", "dept": "Computer Science Block"},
+    {"name": "Prof. Singh",     "email": "singh@ecolens.in",   "role": "dept_staff", "dept": "Engineering Block"},
+    {"name": "Dr. Gupta",       "email": "gupta@ecolens.in",   "role": "dept_staff", "dept": "Science & Research Block"},
+    {"name": "Mr. Mishra",      "email": "mishra@ecolens.in",  "role": "dept_staff", "dept": "Safety & Maintenance"},
     # Wardens
-    {"name": "Warden Yadav",    "email": "warden_a@csjmu.ac.in","role": "warden",     "dept": "Hostel Block A"},
-    {"name": "Warden Sinha",    "email": "warden_b@csjmu.ac.in","role": "warden",     "dept": "Hostel Block B"},
-    {"name": "Warden Tripathi", "email": "warden_g@csjmu.ac.in","role": "warden",     "dept": "Girls Hostel"},
+    {"name": "Warden Yadav",    "email": "warden_a@ecolens.in","role": "warden",     "dept": "Hostel Block A"},
+    {"name": "Warden Sinha",    "email": "warden_b@ecolens.in","role": "warden",     "dept": "Hostel Block B"},
+    {"name": "Warden Tripathi", "email": "warden_g@ecolens.in","role": "warden",     "dept": "Girls Hostel"},
     # Students
-    {"name": "Arjun Kumar",     "email": "arjun@student.csjmu.ac.in",   "role": "student", "dept": "Hostel Block A"},
-    {"name": "Priya Patel",     "email": "priya@student.csjmu.ac.in",   "role": "student", "dept": "Girls Hostel"},
-    {"name": "Rahul Tiwari",    "email": "rahul@student.csjmu.ac.in",   "role": "student", "dept": "Computer Science Block"},
-    {"name": "Sneha Agarwal",   "email": "sneha@student.csjmu.ac.in",   "role": "student", "dept": "Engineering Block"},
-    {"name": "Vivek Dubey",     "email": "vivek@student.csjmu.ac.in",   "role": "student", "dept": "Hostel Block B"},
-    {"name": "Anita Rao",       "email": "anita@student.csjmu.ac.in",   "role": "student", "dept": "Science & Research Block"},
-    {"name": "Mohit Jain",      "email": "mohit@student.csjmu.ac.in",   "role": "student", "dept": "Hostel Block A"},
+    {"name": "Arjun Kumar",     "email": "arjun@student.ecolens.in",   "role": "student", "dept": "Hostel Block A"},
+    {"name": "Priya Patel",     "email": "priya@student.ecolens.in",   "role": "student", "dept": "Girls Hostel"},
+    {"name": "Rahul Tiwari",    "email": "rahul@student.ecolens.in",   "role": "student", "dept": "Computer Science Block"},
+    {"name": "Sneha Agarwal",   "email": "sneha@student.ecolens.in",   "role": "student", "dept": "Engineering Block"},
+    {"name": "Vivek Dubey",     "email": "vivek@student.ecolens.in",   "role": "student", "dept": "Hostel Block B"},
+    {"name": "Anita Rao",       "email": "anita@student.ecolens.in",   "role": "student", "dept": "Science & Research Block"},
+    {"name": "Mohit Jain",      "email": "mohit@student.ecolens.in",   "role": "student", "dept": "Hostel Block A"},
     # Staff
-    {"name": "Sunita Devi",     "email": "sunita@staff.csjmu.ac.in",    "role": "staff",   "dept": "Administration Block"},
-    {"name": "Ram Prasad",      "email": "ram@staff.csjmu.ac.in",       "role": "staff",   "dept": "Computer Science Block"},
+    {"name": "Sunita Devi",     "email": "sunita@staff.ecolens.in",    "role": "staff",   "dept": "Administration Block"},
+    {"name": "Ram Prasad",      "email": "ram@staff.ecolens.in",       "role": "staff",   "dept": "Computer Science Block"},
 ]
 
 existing_users = db.query(models.User).count()
@@ -271,7 +271,7 @@ else:
 db.close()
 print("\n✅ Seed complete!")
 print("\nDemo login credentials (password: password123):")
-print("  admin@csjmu.ac.in        → Admin")
-print("  arjun@student.csjmu.ac.in → Student")
-print("  verma@csjmu.ac.in        → Dept Staff (CS Block)")
-print("  warden_a@csjmu.ac.in     → Hostel Warden")
+print("  admin@ecolens.in              → Admin")
+print("  arjun@student.ecolens.in      → Student")
+print("  verma@ecolens.in              → Dept Staff (CS Block)")
+print("  warden_a@ecolens.in           → Hostel Warden")

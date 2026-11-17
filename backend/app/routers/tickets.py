@@ -38,7 +38,7 @@ async def create_ticket(
         raise HTTPException(
             status_code=422,
             detail=(
-                "Submitted coordinates are outside the CSJMU campus boundary. "
+                "Submitted coordinates are outside the EcoLens campus boundary. "
                 "Reports must be submitted from within the campus."
             ),
         )

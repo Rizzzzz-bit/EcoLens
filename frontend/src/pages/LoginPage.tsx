@@ -33,10 +33,10 @@ export default function LoginPage() {
   }
 
   const demoLogins = [
-    { label: 'Student', email: 'arjun@student.csjmu.ac.in' },
-    { label: 'Dept Staff', email: 'verma@csjmu.ac.in' },
-    { label: 'Warden', email: 'warden_a@csjmu.ac.in' },
-    { label: 'Admin', email: 'admin@csjmu.ac.in' },
+    { label: 'Student', email: 'arjun@student.ecolens.in' },
+    { label: 'Dept Staff', email: 'verma@ecolens.in' },
+    { label: 'Warden', email: 'warden_a@ecolens.in' },
+    { label: 'Admin', email: 'admin@ecolens.in' },
   ]
 
   return (
@@ -44,7 +44,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="text-6xl mb-3">🌿</div>
-          <h1 className="text-3xl font-bold text-green-800">EcoCSJMU</h1>
+          <h1 className="text-3xl font-bold text-green-800">EcoLens</h1>
           <p className="text-green-600 mt-1">AI-Powered Campus Sustainability Platform</p>
         </div>
 
@@ -54,7 +54,7 @@ export default function LoginPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
                 className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
-                placeholder="you@csjmu.ac.in" />
+                placeholder="you@ecolens.in" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>

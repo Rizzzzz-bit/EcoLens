@@ -66,8 +66,8 @@ function getLocation(): Promise<GpsLocation> {
         if (!isInsideCampus(lat, lng)) {
           reject(
             new Error(
-              'You appear to be outside the CSJMU campus. ' +
-              'EcoCSJMU reports can only be submitted from within campus.'
+              'You appear to be outside the EcoLens campus. ' +
+              'EcoLens reports can only be submitted from within campus.'
             )
           )
           return

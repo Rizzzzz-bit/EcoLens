@@ -8,7 +8,7 @@ from app.routers import auth, tickets, ai, buildings, analytics, leaderboard, us
 
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
 
-# Comma-separated allowed origins, e.g. "https://ecocsjmu.example.com"
+# Comma-separated allowed origins, e.g. "https://ecolens.vercel.app"
 # Defaults to localhost for local dev; override in .env for production.
 _raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost,http://localhost:80")
 ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()]
@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="EcoCSJMU API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="EcoLens API", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

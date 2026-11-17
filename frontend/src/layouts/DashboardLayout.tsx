@@ -53,7 +53,7 @@ export default function DashboardLayout({ children }: Props) {
       {/* Sidebar */}
       <aside className="w-56 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col">
         <div className="p-4 border-b border-gray-100">
-          <div className="text-lg font-bold text-green-700">🌿 EcoCSJMU</div>
+          <div className="text-lg font-bold text-green-700">🌿 EcoLens</div>
           <div className="text-xs text-gray-500 mt-0.5">Sustainability Platform</div>
         </div>
 

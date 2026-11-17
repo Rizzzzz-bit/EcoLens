@@ -47,7 +47,7 @@ export default function TicketCard({ ticket, onClick }: Props) {
       <div className="flex items-start gap-3">
         {ticket.image_url ? (
           <img
-            src={`http://localhost:8000${ticket.image_url}`}
+            src={`${import.meta.env.VITE_API_URL || ''}${ticket.image_url}`}
             alt="ticket"
             className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
           />
