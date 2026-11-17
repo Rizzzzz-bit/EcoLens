@@ -16,7 +16,7 @@ def leaderboard_users(
     db: Session = Depends(get_db),
     _: models.User = Depends(get_current_user),
 ):
-    q = db.query(models.User)
+    q = db.query(models.User).filter(models.User.role != models.UserRole.admin)
     if department_id:
         q = q.filter(models.User.department_id == department_id)
     users = q.order_by(models.User.total_points.desc()).limit(limit).all()
