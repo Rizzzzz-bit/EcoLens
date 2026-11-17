@@ -1,4 +1,5 @@
 import type { TicketCategory, TicketStatus } from '../types'
+import { getImageUrl } from '../api/client'
 
 const CATEGORY_CONFIG: Record<TicketCategory, { label: string; icon: string; bg: string; text: string; border: string; accent: string }> = {
   organic:          { label: 'Organic',          icon: '🌿', bg: 'bg-green-50',  text: 'text-green-700',  border: 'border-green-200', accent: '#16a34a' },
@@ -53,7 +54,7 @@ export default function TicketCard({ ticket, onClick }: Props) {
         {/* Thumbnail / icon */}
         {ticket.image_url ? (
           <img
-            src={`${import.meta.env.VITE_API_URL || ''}${ticket.image_url}`}
+            src={getImageUrl(ticket.image_url)}
             alt="ticket"
             className="w-14 h-14 rounded-xl object-cover flex-shrink-0 ring-1 ring-black/5"
           />

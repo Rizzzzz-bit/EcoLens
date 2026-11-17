@@ -15,4 +15,14 @@ client.interceptors.request.use((config) => {
   return config
 })
 
+/**
+ * Build a full URL for a backend-served asset (e.g. /uploads/abc.jpg).
+ * Uses VITE_API_URL when set (Vercel → Render), otherwise relative path.
+ */
+export function getImageUrl(path: string | null | undefined): string {
+  if (!path) return ''
+  const base = import.meta.env.VITE_API_URL ?? ''
+  return `${base}${path}`
+}
+
 export default client

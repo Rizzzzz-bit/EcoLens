@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import TicketCard from '../components/TicketCard'
 import StatusStepper from '../components/StatusStepper'
 import * as api from '../api'
+import { getImageUrl } from '../api/client'
 import type { Ticket } from '../types'
 
 export default function MyTickets() {
@@ -56,7 +57,7 @@ export default function MyTickets() {
                   <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
                 </div>
                 {selected.image_url && (
-                  <img src={`${import.meta.env.VITE_API_URL || ''}${selected.image_url}`} alt="ticket"
+                  <img src={getImageUrl(selected.image_url)} alt="ticket"
                     className="w-full h-40 object-cover rounded-xl mb-4" />
                 )}
                 <StatusStepper status={selected.status} />
