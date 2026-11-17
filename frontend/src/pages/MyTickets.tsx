@@ -57,8 +57,12 @@ export default function MyTickets() {
                   <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
                 </div>
                 {selected.image_url && (
-                  <img src={getImageUrl(selected.image_url)} alt="ticket"
-                    className="w-full h-40 object-cover rounded-xl mb-4" />
+                  <img
+                    src={getImageUrl(selected.image_url)}
+                    alt="ticket"
+                    className="w-full h-40 object-cover rounded-xl mb-4"
+                    onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                  />
                 )}
                 <StatusStepper status={selected.status} />
                 <div className="mt-4 space-y-2 text-sm">

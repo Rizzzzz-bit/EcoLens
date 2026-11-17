@@ -33,7 +33,7 @@ interface Props {
 
 export default function TicketCard({ ticket, onClick }: Props) {
   const cat = CATEGORY_CONFIG[ticket.category]
-  const st = STATUS_CONFIG[ticket.status]
+  const st  = STATUS_CONFIG[ticket.status]
   const timeAgo = (() => {
     // Backend returns UTC without 'Z'; append it so browsers parse as UTC not local time
     const raw = ticket.created_at.endsWith('Z') ? ticket.created_at : ticket.created_at + 'Z'
@@ -51,18 +51,26 @@ export default function TicketCard({ ticket, onClick }: Props) {
       style={{ borderLeftWidth: 3, borderLeftColor: cat.accent }}
     >
       <div className="flex items-start gap-3 p-4">
-        {/* Thumbnail / icon */}
+        {/* Thumbnail / icon — falls back to category icon if image missing or fails to load */}
         {ticket.image_url ? (
           <img
             src={getImageUrl(ticket.image_url)}
             alt="ticket"
             className="w-14 h-14 rounded-xl object-cover flex-shrink-0 ring-1 ring-black/5"
+            onError={e => {
+              const el = e.currentTarget
+              el.style.display = 'none'
+              const fallback = el.nextElementSibling as HTMLElement | null
+              if (fallback) fallback.style.display = 'flex'
+            }}
           />
-        ) : (
-          <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${cat.bg}`}>
-            {cat.icon}
-          </div>
-        )}
+        ) : null}
+        <div
+          className={`w-14 h-14 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${cat.bg}`}
+          style={{ display: ticket.image_url ? 'none' : 'flex' }}
+        >
+          {cat.icon}
+        </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">

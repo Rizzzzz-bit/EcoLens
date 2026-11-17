@@ -123,7 +123,7 @@ def _random_campus_point(anchor_lat: float, anchor_lng: float,
 # ── Tickets ───────────────────────────────────────────────────────────────────
 CATEGORIES = list(models.TicketCategory)
 STATUSES = [models.TicketStatus.raised, models.TicketStatus.in_progress, models.TicketStatus.resolved]
-STATUS_WEIGHTS = [0.3, 0.4, 0.3]
+STATUS_WEIGHTS = [0.5, 0.3, 0.2]   # more raised so demo looks realistic & not pre-resolved
 CAT_WEIGHTS = [0.40, 0.30, 0.05, 0.20, 0.05]
 
 from app.config.gamification import ACTION_MAP
