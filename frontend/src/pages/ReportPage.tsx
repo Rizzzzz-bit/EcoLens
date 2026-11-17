@@ -209,7 +209,6 @@ export default function ReportPage() {
                 ref={fileRef}
                 type="file"
                 accept="image/*"
-                capture="environment"
                 className="hidden"
                 onChange={e => e.target.files?.[0] && applyFile(e.target.files[0])}
               />
