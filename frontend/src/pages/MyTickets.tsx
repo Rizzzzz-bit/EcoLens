@@ -69,7 +69,7 @@ export default function MyTickets() {
                   )}
                   <div className="text-xs text-gray-400">
                     📍 {selected.lat.toFixed(4)}, {selected.lng.toFixed(4)}<br />
-                    🕐 {new Date(selected.created_at).toLocaleString()}
+                    🕐 {new Date(selected.created_at.endsWith('Z') ? selected.created_at : selected.created_at + 'Z').toLocaleString()}
                   </div>
                 </div>
               </div>

@@ -205,10 +205,20 @@ export default function ReportPage() {
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                 Photo <span className="text-red-400">*</span>
               </label>
+              {/* hidden input — no capture so gallery is accessible */}
               <input
                 ref={fileRef}
                 type="file"
                 accept="image/*"
+                className="hidden"
+                onChange={e => e.target.files?.[0] && applyFile(e.target.files[0])}
+              />
+              {/* hidden input — camera only (mobile) */}
+              <input
+                id="cameraInput"
+                type="file"
+                accept="image/*"
+                capture="environment"
                 className="hidden"
                 onChange={e => e.target.files?.[0] && applyFile(e.target.files[0])}
               />
@@ -218,15 +228,33 @@ export default function ReportPage() {
                   onDragOver={e => { e.preventDefault(); setDragging(true) }}
                   onDragLeave={() => setDragging(false)}
                   onDrop={handleDrop}
-                  onClick={() => fileRef.current?.click()}
-                  className={`border-2 border-dashed rounded-xl h-52 flex flex-col items-center justify-center cursor-pointer transition-all
+                  className={`border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all p-6 gap-4
                     ${dragging
                       ? 'border-green-400 bg-green-50 scale-[1.01]'
-                      : 'border-gray-200 hover:border-green-400 hover:bg-green-50/50'}`}
+                      : 'border-gray-200'}`}
                 >
-                  <div className="text-5xl mb-3 select-none">📷</div>
-                  <p className="text-sm font-medium text-gray-600">Tap to take a photo or upload</p>
-                  <p className="text-xs text-gray-400 mt-1">or drag & drop an image here</p>
+                  <div className="text-5xl select-none">🖼️</div>
+                  <p className="text-sm font-medium text-gray-600 text-center">Choose how to add your photo</p>
+                  {/* Two buttons side by side */}
+                  <div className="flex gap-3 w-full">
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById('cameraInput')?.click()}
+                      className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl border border-green-200 bg-green-50 text-green-700 font-semibold text-sm hover:bg-green-100 transition-colors"
+                    >
+                      <span className="text-2xl">📷</span>
+                      <span className="text-xs">Take Photo</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => fileRef.current?.click()}
+                      className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 font-semibold text-sm hover:bg-blue-100 transition-colors"
+                    >
+                      <span className="text-2xl">🗂️</span>
+                      <span className="text-xs">Upload File</span>
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400">or drag & drop an image here</p>
                 </div>
               ) : (
                 <div className="relative group rounded-xl overflow-hidden border border-gray-100 shadow-sm">

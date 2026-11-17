@@ -34,7 +34,10 @@ export default function TicketCard({ ticket, onClick }: Props) {
   const cat = CATEGORY_CONFIG[ticket.category]
   const st = STATUS_CONFIG[ticket.status]
   const timeAgo = (() => {
-    const diff = (Date.now() - new Date(ticket.created_at).getTime()) / 1000
+    // Backend returns UTC without 'Z'; append it so browsers parse as UTC not local time
+    const raw = ticket.created_at.endsWith('Z') ? ticket.created_at : ticket.created_at + 'Z'
+    const diff = (Date.now() - new Date(raw).getTime()) / 1000
+    if (diff < 60)   return 'just now'
     if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
     if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
     return `${Math.floor(diff / 86400)}d ago`
