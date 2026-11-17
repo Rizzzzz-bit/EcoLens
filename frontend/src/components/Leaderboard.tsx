@@ -26,28 +26,9 @@ export function getLevel(score: number): Level {
   return LEVELS[0]
 }
 
-// ── Demo data ────────────────────────────────────────────────────────────────
-const FAKE_USERS: LeaderboardUser[] = [
-  { rank: 0, user_id: -1,  name: 'Aarav Sharma',   department: 'CSE',       total_points: 340, sustainability_score: 92 },
-  { rank: 0, user_id: -2,  name: 'Priya Mehta',    department: 'ECE',       total_points: 295, sustainability_score: 81 },
-  { rank: 0, user_id: -3,  name: 'Rohan Verma',    department: 'ME',        total_points: 260, sustainability_score: 76 },
-  { rank: 0, user_id: -4,  name: 'Sneha Kapoor',   department: 'Civil',     total_points: 220, sustainability_score: 70 },
-  { rank: 0, user_id: -5,  name: 'Arjun Nair',     department: 'CSE',       total_points: 185, sustainability_score: 65 },
-  { rank: 0, user_id: -6,  name: 'Divya Iyer',     department: 'BCA',       total_points: 150, sustainability_score: 58 },
-  { rank: 0, user_id: -7,  name: 'Karan Joshi',    department: 'MBA',       total_points: 120, sustainability_score: 50 },
-  { rank: 0, user_id: -8,  name: 'Ananya Singh',   department: 'BBA',       total_points: 95,  sustainability_score: 44 },
-  { rank: 0, user_id: -9,  name: 'Vikram Patel',   department: 'Physics',   total_points: 70,  sustainability_score: 38 },
-  { rank: 0, user_id: -10, name: 'Meera Reddy',    department: 'Chemistry', total_points: 45,  sustainability_score: 30 },
-]
-
-/** Merges real users with fake ones, deduplicates, re-ranks, returns top 15. */
+/** Returns real users sorted by rank (already ranked by backend). */
 function mergeAndRank(real: LeaderboardUser[]): LeaderboardUser[] {
-  const realNames = new Set(real.map(u => u.name.toLowerCase()))
-  const fakes = FAKE_USERS.filter(f => !realNames.has(f.name.toLowerCase()))
-  return [...real, ...fakes]
-    .sort((a, b) => b.total_points - a.total_points)
-    .slice(0, 15)
-    .map((u, i) => ({ ...u, rank: i + 1 }))
+  return [...real].sort((a, b) => a.rank - b.rank)
 }
 
 // ── Avatar initials ──────────────────────────────────────────────────────────
