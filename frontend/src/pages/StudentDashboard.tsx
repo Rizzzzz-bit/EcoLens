@@ -123,7 +123,7 @@ export default function StudentDashboard() {
         <div className="bg-white rounded-2xl border border-gray-100 p-5"
           style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
           <h3 className="font-bold text-gray-800 mb-4">🏆 Leaderboard</h3>
-          <UserLeaderboard users={leaders} highlightId={user.id} />
+          <UserLeaderboard users={leaders} highlightId={user.id} compact />
         </div>
 
       </div>
