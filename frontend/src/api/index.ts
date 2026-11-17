@@ -8,6 +8,9 @@ import type {
 export const login = (email: string, password: string) =>
   client.post<{ access_token: string }>('/auth/login', { email, password })
 
+export const signup = (name: string, email: string, password: string) =>
+  client.post<{ access_token: string }>('/auth/signup', { name, email, password })
+
 export const getMe = () => client.get('/auth/me')
 
 export const classifyImage = (file: File) => {

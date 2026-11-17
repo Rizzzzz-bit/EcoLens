@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 const ROLE_HOME: Record<string, string> = {
@@ -89,8 +89,15 @@ export default function LoginPage() {
               </button>
             </form>
 
+            <div className="mt-5 text-center text-sm text-gray-500">
+              New here?{' '}
+              <Link to="/signup" className="text-green-600 font-semibold hover:underline">
+                Create an account
+              </Link>
+            </div>
+
             {/* Quick demo logins */}
-            <div className="mt-6 border-t pt-4">
+            <div className="mt-4 border-t pt-4">
               <p className="text-xs text-gray-400 mb-3 text-center">Quick login (password: password123)</p>
               <div className="grid grid-cols-2 gap-2">
                 {demoLogins.map(d => (

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import PrivateRoute from './components/PrivateRoute'
 import LoginPage from './pages/LoginPage'
+import SignupPage from './pages/SignupPage'
 import StudentDashboard from './pages/StudentDashboard'
 import ReportPage from './pages/ReportPage'
 import MyTickets from './pages/MyTickets'
@@ -16,6 +17,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
           <Route path="/" element={<Navigate to="/login" replace />} />
 
           {/* User (Student) */}
