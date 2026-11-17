@@ -116,7 +116,7 @@ export default function CampusMap() {
       <div className="p-6 max-w-5xl mx-auto space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">🗺️ Campus Map</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-800">🗺️ Map</h1>
             <p className="text-sm text-gray-500">Live issue heatmap — auto-refreshes every 60s</p>
           </div>
           <div className="text-sm text-gray-500">{heatPoints.length} open issues</div>
@@ -143,7 +143,7 @@ export default function CampusMap() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border overflow-hidden" style={{ height: 500 }}>
+        <div className="bg-white rounded-2xl shadow-sm border overflow-hidden" style={{ height: 'calc(100vh - 220px)', minHeight: 300 }}>
           <MapContainer center={CAMPUS_CENTER} zoom={15} style={{ height: '100%', width: '100%' }}>
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

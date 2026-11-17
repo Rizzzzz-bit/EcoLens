@@ -41,11 +41,11 @@ export default function AdminDashboard() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 max-w-6xl mx-auto space-y-6">
-        <h1 className="text-2xl font-bold text-gray-800">⚙️ Admin Dashboard</h1>
+      <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-4 md:space-y-6">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-800">⚙️ Admin Dashboard</h1>
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           {[
             { label: 'Total Tickets', value: stats.total, color: 'text-gray-700' },
             { label: 'Raised', value: stats.raised, color: 'text-orange-600' },
@@ -61,12 +61,12 @@ export default function AdminDashboard() {
 
         {/* Tabs */}
         <div className="bg-white rounded-2xl shadow-sm border">
-          <div className="flex border-b">
+          <div className="flex border-b overflow-x-auto">
             {(['tickets', 'users', 'depts'] as const).map(t => (
               <button key={t} onClick={() => setTab(t)}
-                className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors
+                className={`flex-shrink-0 px-4 py-3 text-sm font-medium border-b-2 transition-colors
                   ${tab === t ? 'border-green-500 text-green-700' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
-                {t === 'tickets' ? '🎫 All Tickets' : t === 'users' ? '👥 Users' : '🏢 Departments'}
+                {t === 'tickets' ? '🎫 Tickets' : t === 'users' ? '👥 Users' : '🏢 Depts'}
               </button>
             ))}
           </div>
@@ -86,20 +86,20 @@ export default function AdminDashboard() {
                 </div>
                 <div className="space-y-3">
                   {tickets.map(t => (
-                    <div key={t.id} className="flex items-start gap-3">
-                      <div className="flex-1"><TicketCard ticket={t} /></div>
+                    <div key={t.id} className="flex flex-col sm:flex-row items-start gap-2 sm:gap-3">
+                      <div className="flex-1 w-full"><TicketCard ticket={t} /></div>
                       {t.status !== 'resolved' && (
-                        <div className="flex flex-col gap-2 flex-shrink-0 pt-2">
+                        <div className="flex sm:flex-col flex-row gap-2 flex-shrink-0 sm:pt-2 w-full sm:w-auto">
                           {t.status === 'raised' && (
                             <button disabled={updating === t.id}
                               onClick={() => updateStatus(t.id, 'in_progress')}
-                              className="text-xs bg-blue-100 text-blue-700 font-semibold px-3 py-1.5 rounded-lg hover:bg-blue-200">
+                              className="flex-1 sm:flex-none text-xs bg-blue-100 text-blue-700 font-semibold px-3 py-1.5 rounded-lg hover:bg-blue-200">
                               Start →
                             </button>
                           )}
                           <button disabled={updating === t.id}
                             onClick={() => updateStatus(t.id, 'resolved')}
-                            className="text-xs bg-green-100 text-green-700 font-semibold px-3 py-1.5 rounded-lg hover:bg-green-200">
+                            className="flex-1 sm:flex-none text-xs bg-green-100 text-green-700 font-semibold px-3 py-1.5 rounded-lg hover:bg-green-200">
                             Resolve ✓
                           </button>
                         </div>

@@ -18,8 +18,8 @@ export default function MyTickets() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 max-w-5xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-800 mb-5">🎫 My Reports</h1>
+      <div className="p-4 md:p-6 max-w-5xl mx-auto">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-5">🎫 My Reports</h1>
 
         <div className="flex gap-6">
           {/* List */}
@@ -36,31 +36,44 @@ export default function MyTickets() {
             ))}
           </div>
 
-          {/* Detail panel */}
+          {/* Detail panel — sidebar on desktop, full-screen overlay on mobile */}
           {selected && (
-            <div className="w-80 flex-shrink-0 bg-white rounded-2xl border shadow-sm p-5 h-fit sticky top-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-gray-800">Ticket #{selected.id}</h3>
-                <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600">✕</button>
-              </div>
-              {selected.image_url && (
-                <img src={`${import.meta.env.VITE_API_URL || ''}${selected.image_url}`} alt="ticket"
-                  className="w-full h-40 object-cover rounded-xl mb-4" />
-              )}
-              <StatusStepper status={selected.status} />
-              <div className="mt-4 space-y-2 text-sm">
-                <div className="bg-orange-50 rounded-lg p-3 text-orange-800">
-                  {selected.action_recommendation}
+            <>
+              {/* Mobile overlay backdrop */}
+              <div
+                className="md:hidden fixed inset-0 bg-black/40 z-40"
+                onClick={() => setSelected(null)}
+              />
+              <div className="
+                fixed inset-x-0 bottom-0 z-50 md:static md:z-auto
+                w-full md:w-80 md:flex-shrink-0
+                bg-white rounded-t-2xl md:rounded-2xl border shadow-lg md:shadow-sm
+                p-5 md:h-fit md:sticky md:top-6
+                max-h-[80vh] md:max-h-none overflow-y-auto
+              ">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-gray-800">Ticket #{selected.id}</h3>
+                  <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
                 </div>
-                {selected.eco_tip && (
-                  <div className="bg-green-50 rounded-lg p-3 text-green-800">💡 {selected.eco_tip}</div>
+                {selected.image_url && (
+                  <img src={`${import.meta.env.VITE_API_URL || ''}${selected.image_url}`} alt="ticket"
+                    className="w-full h-40 object-cover rounded-xl mb-4" />
                 )}
-                <div className="text-xs text-gray-400">
-                  📍 {selected.lat.toFixed(4)}, {selected.lng.toFixed(4)}<br />
-                  🕐 {new Date(selected.created_at).toLocaleString()}
+                <StatusStepper status={selected.status} />
+                <div className="mt-4 space-y-2 text-sm">
+                  <div className="bg-orange-50 rounded-lg p-3 text-orange-800">
+                    {selected.action_recommendation}
+                  </div>
+                  {selected.eco_tip && (
+                    <div className="bg-green-50 rounded-lg p-3 text-green-800">💡 {selected.eco_tip}</div>
+                  )}
+                  <div className="text-xs text-gray-400">
+                    📍 {selected.lat.toFixed(4)}, {selected.lng.toFixed(4)}<br />
+                    🕐 {new Date(selected.created_at).toLocaleString()}
+                  </div>
                 </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>

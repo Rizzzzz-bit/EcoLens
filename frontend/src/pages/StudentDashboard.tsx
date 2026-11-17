@@ -29,20 +29,20 @@ export default function StudentDashboard() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 max-w-4xl mx-auto space-y-6">
+      <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-4 md:space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Welcome, {user.name.split(' ')[0]}! 👋</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-800">Welcome, {user.name.split(' ')[0]}! 👋</h1>
             <p className="text-sm text-gray-500">Your campus sustainability dashboard</p>
           </div>
-          <Link to="/report" className="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-xl">
-            📷 Report Issue
+          <Link to="/report" className="bg-green-600 hover:bg-green-700 text-white text-xs md:text-sm font-semibold px-3 py-2 rounded-xl">
+            📷 Report
           </Link>
         </div>
 
         {/* Score + Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
           <div className="bg-white rounded-2xl shadow-sm border p-5 flex flex-col items-center">
             <ScoreGauge score={Math.round(user.sustainability_score)} />
           </div>

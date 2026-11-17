@@ -5,17 +5,17 @@ import type { ReactNode } from 'react'
 const NAV: Record<string, { label: string; path: string; icon: string }[]> = {
   student: [
     { label: 'Dashboard', path: '/dashboard', icon: '🏠' },
-    { label: 'Report Issue', path: '/report', icon: '📷' },
+    { label: 'Report', path: '/report', icon: '📷' },
     { label: 'My Tickets', path: '/my-tickets', icon: '🎫' },
-    { label: 'Campus Map', path: '/map', icon: '🗺️' },
+    { label: 'Map', path: '/map', icon: '🗺️' },
     { label: 'Leaderboard', path: '/leaderboard', icon: '🏆' },
   ],
   admin: [
     { label: 'Admin', path: '/admin', icon: '⚙️' },
-    { label: 'Campus Map', path: '/map', icon: '🗺️' },
+    { label: 'Map', path: '/map', icon: '🗺️' },
     { label: 'Analytics', path: '/analytics', icon: '📊' },
     { label: 'Leaderboard', path: '/leaderboard', icon: '🏆' },
-    { label: 'Report Issue', path: '/report', icon: '📷' },
+    { label: 'Report', path: '/report', icon: '📷' },
   ],
 }
 
@@ -31,8 +31,9 @@ export default function DashboardLayout({ children }: Props) {
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-56 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col">
+
+      {/* ── Desktop Sidebar (hidden on mobile) ── */}
+      <aside className="hidden md:flex w-56 flex-shrink-0 bg-white border-r border-gray-200 flex-col">
         <div className="p-4 border-b border-gray-100">
           <div className="text-lg font-bold text-green-700">🌿 EcoLens</div>
           <div className="text-xs text-gray-500 mt-0.5">Sustainability Platform</div>
@@ -61,7 +62,7 @@ export default function DashboardLayout({ children }: Props) {
             </div>
             <div className="min-w-0">
               <div className="text-xs font-semibold text-gray-800 truncate">{user.name}</div>
-              <div className="text-xs text-gray-400">{user.role.replace('_', ' ')}</div>
+              <div className="text-xs text-gray-400">{user.role}</div>
             </div>
             <div className="ml-auto text-xs font-bold text-green-700">{user.total_points}pts</div>
           </div>
@@ -74,19 +75,35 @@ export default function DashboardLayout({ children }: Props) {
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 overflow-y-auto">
+      {/* ── Main content ── */}
+      <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
         {children}
-
-        {/* Floating report button — z-[1001] clears Leaflet's own max z-index of 1000 */}
-        <Link
-          to="/report"
-          className="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white rounded-full w-14 h-14 flex items-center justify-center text-2xl shadow-lg transition-colors z-[1001]"
-          title="Report an issue"
-        >
-          📷
-        </Link>
       </main>
+
+      {/* ── Mobile Bottom Nav (hidden on desktop) ── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[1002] flex">
+        {links.map(l => (
+          <Link
+            key={l.path}
+            to={l.path}
+            className={`flex-1 flex flex-col items-center justify-center py-2 text-xs transition-colors
+              ${location.pathname === l.path
+                ? 'text-green-700 font-semibold'
+                : 'text-gray-400'}`}
+          >
+            <span className="text-xl leading-none mb-0.5">{l.icon}</span>
+            <span className="truncate w-full text-center">{l.label}</span>
+          </Link>
+        ))}
+        <button
+          onClick={() => { logout(); navigate('/login') }}
+          className="flex-1 flex flex-col items-center justify-center py-2 text-xs text-gray-400"
+        >
+          <span className="text-xl leading-none mb-0.5">🚪</span>
+          <span>Logout</span>
+        </button>
+      </nav>
+
     </div>
   )
 }
