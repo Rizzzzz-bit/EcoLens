@@ -112,9 +112,19 @@ def get_recommendations(user_id: int, db: Session) -> list[str]:
         scores[c] = global_ratio - user_ratio  # positive = user underreports this
 
     top3 = sorted(scores, key=lambda x: -scores[x])[:3]
+
+    _LABELS = {
+        "organic": "Organic Waste",
+        "recyclable": "Recyclable Waste",
+        "hazardous": "Hazardous Waste",
+        "general_waste": "General Waste",
+        "resource_wastage": "Resource Wastage",
+    }
+
     tips = []
     for cat in top3:
         action_info = ACTION_MAP.get(cat, {})
-        tips.append(f"🔍 Look out for {cat.replace('_', ' ')} waste: {action_info.get('tip', '')}")
+        label = _LABELS.get(cat, cat.replace('_', ' ').title())
+        tips.append(f"🔍 {label}: {action_info.get('tip', '')}")
 
     return tips
