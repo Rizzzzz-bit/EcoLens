@@ -4,6 +4,9 @@ An AI-powered environmental reporting platform for organizations — universitie
 
 Members photograph waste or resource misuse, Gemini AI classifies the issue, and a geo-tagged ticket is automatically routed to the responsible department for resolution.
 
+🔗 **Live Demo:** [eco-lens-six.vercel.app](https://eco-lens-six.vercel.app)
+⚙️ **API:** [ecolens-backend.onrender.com](https://ecolens-backend.onrender.com)
+
 ---
 
 ## ✨ Features
