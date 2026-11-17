@@ -45,34 +45,17 @@ function gpsErrorMessage(code: number): string {
 function getLocation(): Promise<GpsLocation> {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      reject(new Error('Geolocation is not supported by this browser. Please use a device with GPS.'))
+      reject(new Error('Geolocation is not supported by this browser.'))
       return
     }
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const accuracy = pos.coords.accuracy   // metres (radius of 68% confidence circle)
-        if (accuracy > MAX_ACCURACY_METRES) {
-          reject(
-            new Error(
-              `Location accuracy is too low (±${Math.round(accuracy)} m). ` +
-              `Move to an open area and try again.`
-            )
-          )
-          return
-        }
-        const lat = pos.coords.latitude
-        const lng = pos.coords.longitude
-        if (!isInsideCampus(lat, lng)) {
-          reject(
-            new Error(
-              'You appear to be outside the EcoLens campus. ' +
-              'EcoLens reports can only be submitted from within campus.'
-            )
-          )
-          return
-        }
-        resolve({ lat, lng, accuracy })
+        resolve({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
+        })
       },
       (err) => reject(new Error(gpsErrorMessage(err.code))),
       { timeout: 10000, maximumAge: 0, enableHighAccuracy: true },
@@ -116,7 +99,7 @@ export default function ReportPage() {
   }
 
   const handleClassify = async () => {
-    if (!file || !gps) return
+    if (!file) return
     setLoading(true); setError('')
     try {
       const r = await api.classifyImage(file)
@@ -129,14 +112,17 @@ export default function ReportPage() {
     }
   }
 
+  // Default campus centre coordinates used when GPS is unavailable
+  const CAMPUS_DEFAULT = { lat: 26.5045, lng: 80.2695 }
+
   const handleSubmit = async () => {
-    if (!file || !aiResult || !aiResult.relevant || !gps) return
+    if (!file || !aiResult || !aiResult.relevant) return
     setLoading(true); setError('')
     try {
       const form = new FormData()
       form.append('image', file)
-      form.append('lat', String(gps.lat))
-      form.append('lng', String(gps.lng))
+      form.append('lat', String(gps?.lat ?? CAMPUS_DEFAULT.lat))
+      form.append('lng', String(gps?.lng ?? CAMPUS_DEFAULT.lng))
       const r = await api.createTicket(form, aiResult.classification_token)
       setTicketId(r.data.id)
       setStep('submitted')
@@ -260,7 +246,7 @@ export default function ReportPage() {
 
             <button
               onClick={handleClassify}
-              disabled={!file || !gps || loading}
+              disabled={!file || loading}
               className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors"
             >
               {loading ? 'Analysing…' : '🤖 Analyse with AI'}
