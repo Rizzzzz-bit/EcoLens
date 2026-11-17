@@ -18,17 +18,49 @@ ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 
 
 def _auto_seed():
-    """Seed demo data if the database is empty. Safe to run on every startup."""
+    """Seed demo data and always sync users to the 2 defined credentials."""
     try:
         from app.db import SessionLocal
         from app import models
+        from app.dependencies import hash_password
         db = SessionLocal()
-        if db.query(models.User).count() == 0:
-            logger.info("Empty database detected — running seed...")
-            import scripts.seed  # noqa: F401  runs the seed script top-level
-            logger.info("Seed complete.")
-        else:
-            logger.info("Database already seeded — skipping.")
+
+        # Always enforce exactly these 2 users — delete any others
+        USERS = [
+            {"name": "Admin",  "email": "admin@ecolens.in", "role": models.UserRole.admin,   "dept_name": None},
+            {"name": "User",   "email": "user@ecolens.in",  "role": models.UserRole.student, "dept_name": "Computer Science Block"},
+        ]
+        target_emails = {u["email"] for u in USERS}
+        deleted = db.query(models.User).filter(models.User.email.notin_(target_emails)).delete(synchronize_session=False)
+        db.commit()
+        if deleted:
+            logger.info(f"Removed {deleted} stale user(s) from DB.")
+
+        for u in USERS:
+            dept = db.query(models.Department).filter(models.Department.name == u["dept_name"]).first() if u["dept_name"] else None
+            existing = db.query(models.User).filter(models.User.email == u["email"]).first()
+            if existing:
+                existing.name = u["name"]
+                existing.role = u["role"]
+                existing.hashed_password = hash_password("password123")
+                existing.department_id = dept.id if dept else None
+            else:
+                db.add(models.User(
+                    name=u["name"],
+                    email=u["email"],
+                    hashed_password=hash_password("password123"),
+                    role=u["role"],
+                    department_id=dept.id if dept else None,
+                ))
+        db.commit()
+        logger.info("Users synced: admin@ecolens.in + user@ecolens.in (password: password123)")
+
+        # Seed rest of the data only if DB is otherwise empty
+        if db.query(models.Department).count() == 0:
+            logger.info("Empty database detected — running full seed...")
+            import scripts.seed  # noqa: F401
+            logger.info("Full seed complete.")
+
         db.close()
     except Exception as e:
         logger.warning(f"Auto-seed failed (non-fatal): {e}")
