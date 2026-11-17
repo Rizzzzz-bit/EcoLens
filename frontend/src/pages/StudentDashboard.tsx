@@ -73,7 +73,8 @@ export default function StudentDashboard() {
       api.getTickets({ limit: 5 }).then(r => setTickets(r.data)),
       api.getMyTicketCount().then(r => setReportCount(r.data.count)),
       api.getMyBadges().then(r => setBadges(r.data)),
-      api.getLeaderboardUsers().then(r => setLeaders(r.data.slice(0, 10))),
+      // fetch up to 200 so current user's rank is always found, then show top-10 in preview
+      api.getLeaderboardUsers(undefined, 200).then(r => setLeaders(r.data)),
       api.getMyRecommendations().then(r => setTips(r.data.tips)),
     ]).finally(() => setLoading(false))
   }, [])
@@ -264,7 +265,7 @@ export default function StudentDashboard() {
               </div>
               {loading
                 ? <div className="space-y-2">{[1,2,3,4,5].map(i => <Skeleton key={i} className="h-10 w-full" />)}</div>
-                : <UserLeaderboard users={leaders} highlightId={user.id} compact />
+                : <UserLeaderboard users={leaders.slice(0, 10)} highlightId={user.id} compact />
               }
             </div>
 

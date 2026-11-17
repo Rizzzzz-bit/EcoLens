@@ -42,8 +42,8 @@ export const getHeatmap = () =>
 export const getMapPoints = () =>
   client.get<MapPoint[]>('/tickets/map-points')
 
-export const getLeaderboardUsers = (department_id?: number) =>
-  client.get<LeaderboardUser[]>('/leaderboard/users', { params: { department_id } })
+export const getLeaderboardUsers = (department_id?: number, limit?: number) =>
+  client.get<LeaderboardUser[]>('/leaderboard/users', { params: { department_id, limit } })
 
 export const getLeaderboardDepts = () =>
   client.get<LeaderboardDepartment[]>('/leaderboard/departments')
