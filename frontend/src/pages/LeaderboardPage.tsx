@@ -93,6 +93,15 @@ export default function LeaderboardPage() {
           </div>
         </div>
 
+        {/* ── Prototype disclaimer ── */}
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs text-amber-800 flex items-start gap-2">
+          <span className="mt-0.5 flex-shrink-0">⚠️</span>
+          <span>
+            <strong>Prototype Note:</strong> Some entries are demo data for visual testing only.
+            Real rankings will reflect actual activity once the app is in live use.
+          </span>
+        </div>
+
       </div>
     </DashboardLayout>
   )

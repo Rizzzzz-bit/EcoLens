@@ -84,7 +84,7 @@ export default function StudentDashboard() {
   const firstName = user.name.split(' ')[0]
   const level     = getLevel(user.sustainability_score)
 
-  // Rank from leaderboard (find current user; fallback to '—')
+  // Rank from backend list only (before fake users are merged in Leaderboard component)
   const myRank = leaders.find(l => l.user_id === user.id)?.rank ?? null
 
   return (
