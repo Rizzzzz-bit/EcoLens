@@ -15,7 +15,6 @@ const NAV: Record<string, { label: string; path: string; icon: string }[]> = {
     { label: 'Map', path: '/map', icon: '🗺️' },
     { label: 'Analytics', path: '/analytics', icon: '📊' },
     { label: 'Leaderboard', path: '/leaderboard', icon: '🏆' },
-    { label: 'Report', path: '/report', icon: '📷' },
   ],
 }
 
