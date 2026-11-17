@@ -145,7 +145,7 @@ export default function ReportPage() {
     <DashboardLayout>
       <div className="max-w-lg mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-1">📷 Report an Issue</h1>
-        <p className="text-sm text-gray-500 mb-6">Take or upload a photo of waste or resource misuse on campus.</p>
+        <p className="text-sm text-gray-500 mb-6">Take or upload a photo to report an environmental issue.</p>
 
         {/* Step 1: Capture */}
         {step === 'capture' && (
